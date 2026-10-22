@@ -1,0 +1,10 @@
+{
+  "name": "superheropedia-2ndmid",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Express API for the Superhero-pedia midterm",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=22" },
+  "dependencies": { "express": "^5.2.1" }
+}

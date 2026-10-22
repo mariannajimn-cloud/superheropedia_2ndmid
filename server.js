@@ -1,12 +1,7 @@
-import express from 'express';
+import { app } from './app.js';
 
-const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Serve the static frontend from ./public
-app.use(express.static('public'));
-
-
-app.listen(PORT, async () => {
+app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
