@@ -1,18 +1,90 @@
-/* Scrollable Catalog Container */
-.catalog-scroll-container {
-  max-height: 72vh;
-  overflow-y: auto;
+body {
+  background-color: #070d1b !important; 
+  font-family: 'Montserrat', sans-serif;
+  color: #e2e8f0;
 }
 
-/* Card Interactivity */
-.char-card {
+.navbar {
+  background-color: #d90429 !important;
+  border-bottom: 3px solid #3a86ff !important;
+}
+
+.navbar-brand {
+  font-family: 'Bangers', cursive !important;
+  font-size: 2.2rem !important;
+  letter-spacing: 1.5px;
+  color: #ffffff !important;
+  text-shadow: 2px 2px 0px #03045e;
+}
+
+.catalog-scroll-container {   /* Contenedor principal catálogo */
+  background-color: #0f172a !important; /* Azul marino un poco más claro para el contenedor */
+  border: 2px solid #334155 !important;
+}
+
+/* 4. Tarjetas de los superhéroes (grid) */
+.char-card {    
+  background-color: #ffffff !important;
+  border: 2px solid #cbd5e1 !important;
+  border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.15s ease-in-out, border-color 0.15s ease-in-out;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.char-card:hover {
+/* Efecto al pasar el mouse sobre una tarjeta */
+.char-card:hover, .char-card.selected {
   transform: translateY(-4px);
-  border-color: #dc3545 !important;
+  border-color: #ffb703 !important; 
+  box-shadow: 0 0 15px rgba(255, 183, 3, 0.6);
+}
+
+/* Nombre personaje, usamos banger tmb */
+.char-card .card-title {
+  font-family: 'bangers', sans-serif !important;
+  color: #0f172a !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px;
+}
+
+.char-card .badge {
+  font-family: 'Montserrat', sans-serif !important;
+  background-color: #475569 !important;
+  color: #ffffff !important;
+}
+
+/* Ventana modal de caracterisiticas personaje */
+.modal-content {
+  background-color: #0f172a !important;
+  color: #e2e8f0 !important;
+  border: 3px solid #d90429 !important;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
+.modal-header {
+  background-color: #d90429 !important;
+  border-bottom: 2px solid #334155 !important;
+}
+
+.modal-title {
+  font-family: 'Bangers', cursive !important;
+  font-size: 2rem !important;
+  letter-spacing: 1px;
+}
+
+.modal-body .p-2, .modal-body small, .modal-body span, .modal-body div {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+.modal-body .bg-body-tertiary, .modal-body .bg-black {
+  background-color: #070d1b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+.modal-footer {
+  background-color: #070d1b !important;
+  border-top: 2px solid #334155 !important;
 }
 
 .char-card-img {

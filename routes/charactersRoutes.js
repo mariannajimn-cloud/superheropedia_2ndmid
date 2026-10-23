@@ -1,15 +1,16 @@
 import express from 'express';
-import { searchCharacters, getCharacterById } from '../services/characters.js';
+import { searchCharacters, getCharacterById } from '../services/charactersServices.js';
 import { ApiError } from '../middleware/errors.js';
 
 const router = express.Router();
 
+// route of sction search
 router.get('/', async (req, res, next) => {
   try {
     const search = req.query.search === undefined ? '' : req.query.search;
 
     if (typeof search !== 'string' || search.trim().length > 100) {
-      throw new ApiError(400, 'Search must be a single name of at most 100 characters.');
+      throw new ApiError(400, 'Search must be a single name of at most 100 characters.'); 
     }
 
     const results = await searchCharacters(search.trim());

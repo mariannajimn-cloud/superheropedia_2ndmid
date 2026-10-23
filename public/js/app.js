@@ -56,7 +56,7 @@ async function loadCatalog(searchQuery = '') {
 
   try {
     // Define your search enpoint here.
-    const endpoint = '/api';
+    const endpoint = searchQuery ? `/api?search=${encodeURIComponent(searchQuery)}` : '/api';
 
     const response = await fetch(endpoint);
     if (response.status === 404) {
@@ -130,7 +130,7 @@ async function openDetail(identifier) {
 
   try {
     // Set the enpoint for retrieving the information.
-    const response = await fetch(`/api`);
+    const response = await fetch(`/api/${identifier}`);
 
     if (response.status === 404) {
       if (isModalOpen) characterModal.hide();
