@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catalog Exam Interface</title>
+  <title>Superhero-pedia</title>
 
   <!-- fonst de google - banger y monserrat -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,7 +23,7 @@
       </a>
       <form class="d-flex" id="search-form" role="search">
         <div class="input-group">
-          <input class="form-control" type="search" id="search-input" placeholder="Search by name or ID..." aria-label="Search">
+          <input class="form-control" type="search" id="search-input" placeholder="Search by name..." aria-label="Search by name">
           <button class="btn btn-info fw-bold text-dark px-4" type="submit">Search</button>
           <button class="btn btn-outline-light d-none" type="button" id="clear-search-btn">Reset</button>
         </div>
@@ -74,45 +74,47 @@
 
         <div class="modal-body p-4">
           <div class="row align-items-center">
-            <!-- Left Column: Sprite & Types -->
+            <!-- Character image and powerstats -->
             <div class="col-md-5 text-center mb-3 mb-md-0">
               <div class="sprite-wrapper p-3 rounded bg-body-tertiary border mb-3">
-                <img id="modal-img" src="" alt="Character Sprite" class="img-fluid characters-detail-img">
+                <img id="modal-img" src="" alt="Superhero" class="img-fluid characters-detail-img">
               </div>
-              <div id="modal-types" class="d-flex justify-content-center gap-2 flex-wrap"></div>
+              <h6 class="fw-bold text-secondary mb-2">Powerstats</h6>
+              <div class="row row-cols-2 g-2 text-center">
+                <div class="col"><div class="p-2 border rounded bg-body-tertiary"><small class="text-secondary d-block">Intelligence</small><span id="modal-intelligence" class="fw-bold">-</span></div></div>
+                <div class="col"><div class="p-2 border rounded bg-body-tertiary"><small class="text-secondary d-block">Strength</small><span id="modal-strength" class="fw-bold">-</span></div></div>
+                <div class="col"><div class="p-2 border rounded bg-body-tertiary"><small class="text-secondary d-block">Speed</small><span id="modal-speed" class="fw-bold">-</span></div></div>
+                <div class="col"><div class="p-2 border rounded bg-body-tertiary"><small class="text-secondary d-block">Durability</small><span id="modal-durability" class="fw-bold">-</span></div></div>
+                <div class="col"><div class="p-2 border rounded bg-body-tertiary"><small class="text-secondary d-block">Power</small><span id="modal-power" class="fw-bold">-</span></div></div>
+                <div class="col"><div class="p-2 border rounded bg-body-tertiary"><small class="text-secondary d-block">Combat</small><span id="modal-combat" class="fw-bold">-</span></div></div>
+              </div>
             </div>
 
-            <!-- Right Column: Stats, Abilities, Moves, Characteristics, etc. -->
+            <!-- Character biography and details -->
             <div class="col-md-7">
-              <div class="row g-2 text-center mb-3">
-                <div class="col-4">
-                  <div class="p-2 border rounded bg-body-tertiary">
-                    <small class="text-secondary d-block">Age</small>
-                    <span class="fw-bold" id="modal-exp">-</span>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="p-2 border rounded bg-body-tertiary">
-                    <small class="text-secondary d-block">Height</small>
-                    <span class="fw-bold" id="modal-height">-</span>
-                  </div>
-                </div>
-                <div class="col-4">
-                  <div class="p-2 border rounded bg-body-tertiary">
-                    <small class="text-secondary d-block">Weight</small>
-                    <span class="fw-bold" id="modal-weight">-</span>
-                  </div>
-                </div>
-              </div>
-              <!-- Add the details requested in your exercise. -->
               <div class="mb-3">
-                <h6 class="fw-bold text-secondary mb-1">Features</h6>
-                <div id="modal-abilities" class="d-flex flex-wrap gap-1"></div>
+                <h6 class="fw-bold text-secondary mb-1">Full name</h6>
+                <p id="modal-full-name" class="mb-0">-</p>
               </div>
-
+              <div class="mb-3">
+                <h6 class="fw-bold text-secondary mb-1">Biography</h6>
+                <p id="modal-biography" class="mb-0">-</p>
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-12"><small class="text-secondary">Place of birth</small><div id="modal-place-of-birth">-</div></div>
+                <div class="col-12"><small class="text-secondary">Aliases</small><div id="modal-aliases">-</div></div>
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-6"><small class="text-secondary">Gender</small><div id="modal-gender">-</div></div>
+                <div class="col-6"><small class="text-secondary">Race</small><div id="modal-race">-</div></div>
+                <div class="col-6"><small class="text-secondary">Height</small><div id="modal-height">-</div></div>
+                <div class="col-6"><small class="text-secondary">Weight</small><div id="modal-weight">-</div></div>
+                <div class="col-6"><small class="text-secondary">Eye color</small><div id="modal-eye-color">-</div></div>
+                <div class="col-6"><small class="text-secondary">Hair color</small><div id="modal-hair-color">-</div></div>
+              </div>
               <div>
-                <h6 class="fw-bold text-secondary mb-1">Characteristics</h6>
-                <div id="modal-moves" class="moves-scroll-box p-2 border rounded bg-body-tertiary d-flex flex-wrap gap-1"></div>
+                <h6 class="fw-bold text-secondary mb-1">Group affiliation</h6>
+                <p id="modal-group-affiliation" class="mb-0">-</p>
               </div>
             </div>
           </div>
@@ -122,7 +124,7 @@
           <button type="button" class="btn btn-outline-light px-4" id="prev-btn">
             &larr; Previous
           </button>
-          <span class="text-secondary small">Use Left / Right arrows to navigate</span>
+          <span class="text-secondary small d-none d-sm-inline">Use Left / Right arrows to navigate</span>
           <button type="button" class="btn btn-outline-light px-4" id="next-btn">
             Next &rarr;
           </button>

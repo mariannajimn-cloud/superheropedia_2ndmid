@@ -30,12 +30,25 @@ const characterModal = new bootstrap.Modal(modalElement);
 const modalName = document.getElementById('modal-name');
 const modalId = document.getElementById('modal-id');
 const modalImg = document.getElementById('modal-img');
-const modalTypes = document.getElementById('modal-types');
-const modalExp = document.getElementById('modal-exp');
+const modalFullName = document.getElementById('modal-full-name');
+const modalBiography = document.getElementById('modal-biography');
+const modalPlaceOfBirth = document.getElementById('modal-place-of-birth');
+const modalAliases = document.getElementById('modal-aliases');
+const modalGender = document.getElementById('modal-gender');
+const modalRace = document.getElementById('modal-race');
 const modalHeight = document.getElementById('modal-height');
 const modalWeight = document.getElementById('modal-weight');
-const modalAbilities = document.getElementById('modal-abilities');
-const modalMoves = document.getElementById('modal-moves');
+const modalEyeColor = document.getElementById('modal-eye-color');
+const modalHairColor = document.getElementById('modal-hair-color');
+const modalGroupAffiliation = document.getElementById('modal-group-affiliation');
+const modalPowerstats = {
+  intelligence: document.getElementById('modal-intelligence'),
+  strength: document.getElementById('modal-strength'),
+  speed: document.getElementById('modal-speed'),
+  durability: document.getElementById('modal-durability'),
+  power: document.getElementById('modal-power'),
+  combat: document.getElementById('modal-combat')
+};
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 
@@ -43,6 +56,8 @@ const nextBtn = document.getElementById('next-btn');
 let currentPrevId = null;
 let currentNextId = null;
 let isModalOpen = false;
+let catalogRequestId = 0;
+let detailRequestId = 0;
 
 modalElement.addEventListener('shown.bs.modal', () => { isModalOpen = true; });
 modalElement.addEventListener('hidden.bs.modal', () => { isModalOpen = false; });
@@ -51,6 +66,9 @@ modalElement.addEventListener('hidden.bs.modal', () => { isModalOpen = false; })
  * Fetch and render the catalog list from the student's Express API
  */
 async function loadCatalog(searchQuery = '') {
+  const requestId = ++catalogRequestId;
+  detailRequestId++;
+  if (isModalOpen) characterModal.hide();
   showLoading(true);
   hideError();
 
@@ -59,6 +77,7 @@ async function loadCatalog(searchQuery = '') {
     const endpoint = searchQuery ? `/api?search=${encodeURIComponent(searchQuery)}` : '/api';
 
     const response = await fetch(endpoint);
+    if (requestId !== catalogRequestId) return;
     if (response.status === 404) {
       showError(`No character matched "${searchQuery}".`);
       return;
@@ -66,6 +85,7 @@ async function loadCatalog(searchQuery = '') {
     if (!response.ok) throw new Error(`Server responded with status ${response.status}`);
 
     const data = await response.json();
+    if (requestId !== catalogRequestId) return;
     const list = Array.isArray(data) ? data : (data.results || []);
 
     if (list.length === 0) {
@@ -75,9 +95,11 @@ async function loadCatalog(searchQuery = '') {
 
     renderCatalog(list, searchQuery);
   } catch (err) {
-    showError(`Failed to communicate with backend API: ${err.message}`);
+    if (requestId === catalogRequestId) {
+      showError(`Failed to communicate with backend API: ${err.message}`);
+    }
   } finally {
-    showLoading(false);
+    if (requestId === catalogRequestId) showLoading(false);
   }
 }
 
@@ -127,10 +149,12 @@ function renderCatalog(characterList, searchQuery) {
  */
 async function openDetail(identifier) {
   if (identifier === null || identifier === undefined) return;
+  const requestId = ++detailRequestId;
 
   try {
     // Set the enpoint for retrieving the information.
     const response = await fetch(`/api/${identifier}`);
+    if (requestId !== detailRequestId) return;
 
     if (response.status === 404) {
       if (isModalOpen) characterModal.hide();
@@ -143,14 +167,17 @@ async function openDetail(identifier) {
     }
 
     const character = await response.json();
+    if (requestId !== detailRequestId) return;
     populateModal(character);
 
     if (!isModalOpen) {
       characterModal.show();
     }
   } catch (err) {
-    if (isModalOpen) characterModal.hide();
-    showError(`Error loading character details: ${err.message}`);
+    if (requestId === detailRequestId) {
+      if (isModalOpen) characterModal.hide();
+      showError(`Error loading character details: ${err.message}`);
+    }
   }
 }
 
@@ -164,41 +191,22 @@ function populateModal(character) {
   modalImg.src = character.image || DEFAULT_IMAGE;
   modalImg.onerror = () => { modalImg.onerror = null; modalImg.src = DEFAULT_IMAGE; };
 
-  modalExp.textContent = character.experience ?? '-';
-  modalHeight.textContent = character.height ?? '-';
-  modalWeight.textContent = character.weight ?? '-';
+  modalFullName.textContent = character.fullName || '-';
+  modalBiography.textContent = character.biography || '-';
+  modalPlaceOfBirth.textContent = character.placeOfBirth || '-';
+  modalAliases.textContent = formatList(character.aliases);
+  modalGender.textContent = character.gender || '-';
+  modalRace.textContent = character.race || '-';
+  modalHeight.textContent = formatList(character.height);
+  modalWeight.textContent = formatList(character.weight);
+  modalEyeColor.textContent = character.eyeColor || '-';
+  modalHairColor.textContent = character.hairColor || '-';
+  modalGroupAffiliation.textContent = character.groupAffiliation || '-';
 
-  // Render Types
-  modalTypes.innerHTML = '';
-  (character.types || []).forEach((type) => {
-    const badge = document.createElement('span');
-    badge.className = 'badge bg-info text-uppercase px-3 py-2';
-    badge.textContent = type;
-    modalTypes.appendChild(badge);
+  const powerstats = character.powerstats || {};
+  Object.keys(modalPowerstats).forEach((stat) => {
+    modalPowerstats[stat].textContent = powerstats[stat] ?? '-';
   });
-
-  // Render Abilities
-  modalAbilities.innerHTML = '';
-  (character.abilities || []).forEach((ability) => {
-    const badge = document.createElement('span');
-    badge.className = 'badge bg-secondary text-capitalize';
-    badge.textContent = ability;
-    modalAbilities.appendChild(badge);
-  });
-
-  // Render Moves
-  modalMoves.innerHTML = '';
-  const moves = character.moves || [];
-  if (moves.length === 0) {
-    modalMoves.innerHTML = '<span class="text-secondary small">No moves listed</span>';
-  } else {
-    moves.forEach((move) => {
-      const badge = document.createElement('span');
-      badge.className = 'badge border border-secondary text-body-secondary text-capitalize';
-      badge.textContent = move;
-      modalMoves.appendChild(badge);
-    });
-  }
 
   // Bind Circular Navigation IDs provided by Backend
   currentPrevId = character.prevId ?? null;
@@ -206,6 +214,12 @@ function populateModal(character) {
 
   prevBtn.disabled = currentPrevId === null;
   nextBtn.disabled = currentNextId === null;
+}
+
+function formatList(values) {
+  if (!Array.isArray(values)) return '-';
+  const items = values.filter((value) => typeof value === 'string' && value.trim());
+  return items.length ? items.join(', ') : '-';
 }
 
 // Event Listeners: Modal Left/Right Navigation

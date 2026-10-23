@@ -1,6 +1,6 @@
 # Superhero-pedia — Midterm II
 
-Backend de Node + Express para la plantilla del profesor. El frontend original en `public/` todavía no está conectado: sus llamadas a `/api` y sus campos genéricos deben adaptarse por separado. Este cambio implementa exclusivamente el backend.
+Backend de Node + Express para la plantilla del profesor. El frontend de `public/` está conectado al catálogo (`/api`) y al detalle (`/api/:id`), y muestra los campos de detalle disponibles en la respuesta.
 
 ## Ejecutar
 
@@ -16,7 +16,7 @@ No requiere API key, MongoDB ni archivo `.env`.
 
 ## Endpoints
 
-### GET /api/characters
+### GET /api
 
 Devuelve el catálogo por ID ascendente:
 
@@ -24,11 +24,11 @@ Devuelve el catálogo por ID ascendente:
 { "results": [{ "id": 1, "name": "A-Bomb", "image": "https://..." }] }
 ```
 
-### GET /api/characters?search=batman
+### GET /api?search=batman
 
 Misma estructura, filtrada por coincidencia parcial en `name`, sin distinguir mayúsculas y omitiendo espacios exteriores. No busca por nombre completo ni ID. Una búsqueda vacía devuelve todo el catálogo. Máximo 100 caracteres; parámetros `search` repetidos son inválidos. Sin coincidencias: HTTP 404.
 
-### GET /api/characters/:id
+### GET /api/:id
 
 Devuelve un objeto directamente (sin envoltorio `results`):
 
@@ -65,14 +65,9 @@ Todas las rutas `/api/*` responden errores JSON con esta estructura:
 - `504`: proveedor excede 10 segundos de espera.
 - `500`: error interno inesperado, sin detalles internos expuestos.
 
-## Integración pendiente para frontend
+## Integración del frontend
 
-1. `loadCatalog(searchQuery)` debe llamar a `/api/characters`, añadiendo `search` mediante `URLSearchParams` cuando corresponda; leer `results`.
-2. `openDetail(id)` debe llamar a `/api/characters/ID` y pasar el objeto a `populateModal`.
-3. Adaptar `populateModal` y los elementos HTML a los campos documentados; no existen `experience`, `types`, `abilities` ni `moves` en este contrato.
-4. Los botones Previous/Next usan los IDs de la respuesta para llamar al mismo endpoint de detalle.
-5. Para regresar al inicio después de un error, cargar el catálogo sin búsqueda y usar su primer elemento si se necesita abrir la primera ficha. No hay ID inicial fijo en el contrato.
-6. Mostrar mensajes del cuerpo de error, valores ausentes y el fallback de imagen; conservar estados de carga y evitar que respuestas antiguas sobrescriban la selección actual.
+El catálogo usa `/api` y la búsqueda añade el parámetro `search`; el detalle consulta `/api/:id`. La ficha muestra los campos disponibles en la respuesta, incluidos los valores ausentes y la imagen de respaldo. Previous/Next navega con `prevId` y `nextId`. El catálogo conserva la cuadrícula de la plantilla original y el modal muestra un personaje a la vez. El contrato no incluye `experience`, `types`, `abilities` ni `moves`.
 
 No se necesita crear endpoints de escritura, usuarios, login ni base de datos para esta consigna.
 
@@ -80,10 +75,10 @@ No se necesita crear endpoints de escritura, usuarios, login ni base de datos pa
 
 - `server.js`: arranque y puerto.
 - `app.js` (raíz): configura Express y sirve la plantilla mediante una ruta absoluta.
-- `routes/characters.js`: conecta los endpoints con las funciones del servicio y valida los parámetros.
-- `services/characters.js`: funciones para consultar y normalizar la fuente, buscar personajes y calcular la navegación.
+- `routes/charactersRoutes.js`: conecta los endpoints con las funciones del servicio y valida los parámetros.
+- `services/charactersServices.js`: consulta y normaliza la fuente, busca personajes y calcula la navegación.
 - `middleware/errors.js`: errores JSON centralizados.
-- `public/`: plantilla original del profesor, sin modificaciones de este trabajo.
+- `public/`: frontend conectado a la API, con los campos de detalle integrados en el modal.
 
 ## Fuente externa
 
@@ -94,17 +89,17 @@ El servicio consulta la fuente externa en cada solicitud; no conserva una copia 
 ## Verificación manual
 
 ```sh
-curl http://localhost:3001/api/characters
-curl 'http://localhost:3001/api/characters?search=batman'
-curl 'http://localhost:3001/api/characters?search='
-curl http://localhost:3001/api/characters/1
-curl http://localhost:3001/api/characters/invalid
-curl http://localhost:3001/api/characters/999999
-curl 'http://localhost:3001/api/characters?search=batman&search=superman'
+curl http://localhost:3001/api
+curl 'http://localhost:3001/api?search=batman'
+curl 'http://localhost:3001/api?search='
+curl http://localhost:3001/api/1
+curl http://localhost:3001/api/invalid
+curl http://localhost:3001/api/999999
+curl 'http://localhost:3001/api?search=batman&search=superman'
 ```
 
 Revisa el JSON: catálogo, búsqueda y búsqueda vacía deben responder con `results`; el detalle debe incluir `prevId` y `nextId`. Para comprobar el cierre circular, consulta el primer y el último ID del catálogo: el `prevId` del primero debe ser el último, y el `nextId` del último debe ser el primero. El ID inválido y la búsqueda repetida deben responder `400`; un ID inexistente debe responder `404`.
 
 Para revisar el fallo de la fuente, desconecta temporalmente Internet y consulta un endpoint; no hace falta reiniciar el servidor porque cada solicitud consulta la fuente externa. La solicitud sin conexión debe devolver un error `502` o `504`. Al restablecer Internet, vuelve a probar.
 
-El frontend de `public/` permanece sin conectar a estos endpoints y sin cambios en este trabajo.
+El frontend de `public/` consume el catálogo y el detalle desde estos endpoints; el modal presenta una ficha a la vez.
